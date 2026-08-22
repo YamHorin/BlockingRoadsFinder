@@ -1,0 +1,759 @@
+{
+  "name": "hafganotTelegramDEV",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1b5da083-a4b6-4c7d-85bf-bd60336735b0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=אתה עוזר AI המתמחה בניתוח מבזקים וכתבות חדשותיות על הפגנות, אירועים חריגים וחסימות כבישים בישראל.\n\nתפקידך הוא לקבל טקסט של כתבה/מבזק ולהוציא ממנו נתונים מובנים.\n\nהוראות ביצוע:\n1. נתח את הטקסט בזהירות.\n2. קבע אם הטקסט מתאר הפגנה, מחאה או חסימת כבישים קיימת/מתוכננת.\n3. חלץ את הפרטים הבאים רק אם הם מופיעים או משתמעים מהטקסט.\n4. החזר אך ורק אובייקט JSON תקין ללא שום טקסט נוסף, ללא הקדמות וללא Markdown code blocks.\n5. במיקום ההפגנות מצא את הכבישים המרכזיים שקשורים להפגנות , לדוגמא צומת פתח תקווה בני ברק - כביש 4 \n6. הצג רק דיווחים שקשורים לחסימת כבישים \\ הפגנות \\מחאות שיכולות להשפיע על העומס בכבישים\n\n\nפורמט ה-JSON הנדרש:\n{\n  \"is_protest\": true/false,\n  \"title\": \"כותרת קצרה וקולעת של האירוע\",\n  \"location\": \"שם המיקום המדויק ביותר המוזכר (למשל: צומת קפלן, תל אביב / מחלף השלום)\",\n  \"date_description\": \"תאריך או יום (למשל: היום / מחר / יום חמישי 15.08)\",\n  \"start_time\": \"שעת התחלה (למשל: 18:00, או 'לא צוין')\",\n  \"end_time\": \"שעת סיום משוערת (או 'לא צוין')\",\n  \"blocked_roads\": [\"רשימה\", \"של\", \"רחובות/כבישים\", \"חסומים\"],\n  \"summary\": \"תקציר של 1-2 משפטים על מהות המחאה וההשפעה על התנועה\"\n  \"source\" : מקור הדיווח \n}\nהנה ה DATA שאתה מנתח :\n{{ $('make repond into text in JS').item.json.combined_news }}\n\n{{ $json.combined_news_http }}\n\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        2528,
+        -496
+      ],
+      "id": "14e87062-c702-48a2-a611-7baa906b70bd",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mEkPFJ1NekPFIZt3",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let data = $('Message a model').first().json.content.parts[0].text\n\nconst cleanJsonString = data.replace(/\\n/g, '').trim();\nconst parsedData = JSON.parse(cleanJsonString);\n\n\n\n\nreturn parsedData;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        -176
+      ],
+      "id": "856ca859-e71c-4136-8f3a-a1d573cc0ca4",
+      "name": "מערך של הפגנות מתשובת AI"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.mako.co.il/news-dailynews?partner=NewsNavBar",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Referer",
+              "value": "[https://www.mako.co.il/news-columns](https://www.mako.co.il/news-columns)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1344,
+        -224
+      ],
+      "id": "bf386a60-3d08-4643-b903-31b705bd6782",
+      "name": "חדשות 12 כל החדשות"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2944,
+        -96
+      ],
+      "id": "3981029f-4da1-4917-bfe8-6a3b9bb91f1b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "const mapDays = new Map([\n  [\"Sunday\", \"ראשון\"],\n  [\"Monday\", \"שני\"],\n  [\"Tuesday\", \"שלישי\"],\n  [\"Wednesday\", \"רביעי\"],\n  [\"Thursday\", \"חמישי\"],\n  [\"Friday\", \"שישי\"],\n  [\"Saturday\", \"שבת\"]\n]);\n\n// חילוץ מערך הכבישים בצורה בטוחה\nlet roadsMsg = \"\";\nconst inputJson = $input.first().json;\nconst aiJson = $('מערך של הפגנות מתשובת AI').first()?.json;\n\nif (aiJson && Array.isArray(aiJson.blocked_roads) && aiJson.blocked_roads.length > 0) {\n  roadsMsg = aiJson.blocked_roads.join(\" , \");\n} else {\n  roadsMsg = \"אין חסימות ידועות\";\n}\n\n// חילוץ יתר השדות\nconst dayName = $('Schedule Trigger').first()?.json?.['Day of week'];\nconst curDay = mapDays.get(dayName) || \"לא צוין\";\n\nconst startTime = inputJson.start_time || \"לא צוין\";\nconst endTime = inputJson.end_time || \"לא צוין\";\nconst place = inputJson.location || \"לא צוין\";\nconst title = inputJson.title || \"\";\nconst summary = inputJson.summary || \"\";\nconst source = inputJson.source || \"\";\n\n// תו RLM לכיווניות RTL\nconst RLM = \"\\u200F\";\n\nconst msg = \n`🚨 *התראת הפגנה חדשה* 🚨\n\n${RLM}📌 *${title}*\n\n🗓️ *יום:* יום ${curDay}\n⏰ *שעות:* ${startTime} - ${endTime}\n📍 *מיקום:* ${place}\n📰 *מקור:* ${source}\n\n📝 *תקציר:*\n${summary}\n\n${RLM}🛣️ *כבישים חסומים:* ${roadsMsg}`;\n\nreturn [{\n  json: {\n    msg: msg\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3184,
+        -80
+      ],
+      "id": "037fe4b9-3b3f-494b-93ff-7ba40b392450",
+      "name": "הרכבת הודעה עצמה "
+    },
+    {
+      "parameters": {
+        "url": "=https://www.ynet.co.il/Integration/StoryRss1854.xml",
+        "options": {
+          "customFields": ""
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        224
+      ],
+      "id": "7c540694-6abb-4357-9b9b-f4a84f80b4fc",
+      "name": "RSS YNET JSON"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.now14.co.il/feed/?v={{ $now.toUnixInteger() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        32
+      ],
+      "id": "583cc1c4-9d23-4982-bfda-0f8731af6771",
+      "name": "RSS CH 14"
+    },
+    {
+      "parameters": {
+        "url": "=https://rss.walla.co.il/feed/1/?v={{ $now.toUnixInteger() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        -112
+      ],
+      "id": "458f58da-bdee-4c81-b2ad-2544bd292b19",
+      "name": "RSS WALLA NEWS"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        864,
+        -208
+      ],
+      "id": "ab611afb-98ca-4c1f-974e-c15a7ffc69ae",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "=https://hamal.co.il/main",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Referer",
+              "value": "[https://www.mako.co.il/news-columns](https://www.mako.co.il/news-columns)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1328,
+        -448
+      ],
+      "id": "7dcb440d-f604-4e17-a527-2929987779cf",
+      "name": "חמל "
+    },
+    {
+      "parameters": {
+        "jsCode": "// אוסף את כל הכותרות והתוכן מכל ה-Items של ה-Merge\nconst allItems = $input.all();\n\nconst formattedNews = allItems.map((item, index) => {\n  const title = item.json.title || item.json.contentSnippet || item.json.full_text || '';\n  const desc = item.json.description || '';\n  const contect = item.json.contentSnippet;\n  const source  = item.json.link;\n  return `${index + 1}. ${title} ${desc} ${contect} ${source}`.trim();\n}).join('\\n');\n\n// מחזיר Item יחיד שנושא את כל הטקסט המאוחד\nreturn [{\n  json: {\n    combined_news: formattedNews\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -352
+      ],
+      "id": "9df9d0c4-409d-4994-bf9f-d09698eb8307",
+      "name": "make repond into text in JS"
+    },
+    {
+      "parameters": {
+        "jsCode": "// קבלת הטקסט מה-HTTP Request\nconst htmlContent = $input.first().json.data;\n\n// Mako מציגים את המבזקים בין הביטוי \"מבזקי חדשות\" לבין סוף הרשימה\n// או לחילופין, המבזקים מופרדים בעמוד בתו * (כוכבית) או בשורות חדשות עם שעה.\n\n// ניקוי תגיות HTML בסיסיות לקבלת טקסט נקי\nlet cleanText = htmlContent.replace(/<[^>]*>/g, ' ');\n\n// חילוץ המקטע שרק בו מופיעים המבזקים\nconst startIndex = cleanText.indexOf('מבזקי חדשות');\nif (startIndex !== -1) {\n  cleanText = cleanText.substring(startIndex);\n}\n\n// Mako מפרידים בין המבזקים בעזרת כוכביות (*)\nconst rawFlashes = cleanText.split('*');\n\nconst parsedFlashes = [];\n\nfor (let item of rawFlashes) {\n  let text = item.trim().replace(/\\s+/g, ' '); // ניקוי רווחים כפולים\n  \n  // סינון שורות ריקות או טקסטים של תפריטים (לפי אורך או תבנית שעה)\n  if (text.length > 15 && /\\d{1,2}:\\d{2}/.test(text)) {\n    \n    // חילוץ השעה והתוכן\n    const timeMatch = text.match(/(\\d{1,2}:\\d{2})/);\n    const time = timeMatch ? timeMatch[1] : '';\n    const content = text.replace(time, '').trim();\n\n    parsedFlashes.push({\n      json: {\n        time: time,\n        flash: content,\n        full_text: `${time} - ${content}`,\n        source: \"חדשות 12\"\n      }\n    });\n  }\n}\n\n// החזרת מערך המבזקים הנקי\nreturn parsedFlashes;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        -224
+      ],
+      "id": "d2fd005d-fccb-405a-9fa4-6d2d88a19560",
+      "name": "חדשות 12 פירוק מידע מיותר "
+    },
+    {
+      "parameters": {
+        "jsCode": "// קבלת הטקסט מה-HTTP Request\nconst htmlContent = $input.first().json.data;\n\n// Mako מציגים את המבזקים בין הביטוי \"מבזקי חדשות\" לבין סוף הרשימה\n// או לחילופין, המבזקים מופרדים בעמוד בתו * (כוכבית) או בשורות חדשות עם שעה.\n\n// ניקוי תגיות HTML בסיסיות לקבלת טקסט נקי\nlet cleanText = htmlContent.replace(/<[^>]*>/g, ' ');\n\n// חילוץ המקטע שרק בו מופיעים המבזקים\nconst startIndex = cleanText.indexOf('מבזקי חדשות');\nif (startIndex !== -1) {\n  cleanText = cleanText.substring(startIndex);\n}\n\n// Mako מפרידים בין המבזקים בעזרת כוכביות (*)\nconst rawFlashes = cleanText.split('*');\n\nconst parsedFlashes = [];\n\nfor (let item of rawFlashes) {\n  let text = item.trim().replace(/\\s+/g, ' '); // ניקוי רווחים כפולים\n  \n  // סינון שורות ריקות או טקסטים של תפריטים (לפי אורך או תבנית שעה)\n  if (text.length > 15 && /\\d{1,2}:\\d{2}/.test(text)) {\n    \n    // חילוץ השעה והתוכן\n    const timeMatch = text.match(/(\\d{1,2}:\\d{2})/);\n    const time = timeMatch ? timeMatch[1] : '';\n    const content = text.replace(time, '').trim();\n\n    parsedFlashes.push({\n      json: {\n        time: time,\n        flash: content,\n        full_text: `${time} - ${content}`,\n        source: \"חמל\"\n      }\n    });\n  }\n}\n\n// החזרת מערך המבזקים הנקי\nreturn parsedFlashes;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1536,
+        -448
+      ],
+      "id": "eb639162-05a7-45a2-9097-20653233fa05",
+      "name": "חמל פירוק מידע מיותר "
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2016,
+        -448
+      ],
+      "id": "056959d0-c0be-4929-be03-15c68dd10fbb",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rnnrttucxkrilxyucwxs.supabase.co/rest/v1/rpc/insert_unique_news_flash",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "sb_publishable_x3S2fsnZKnDaUkU-QiNObg_HgW7UTVT"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJubnJ0dHVjeGtyaWx4eXVjd3hzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzE0MjU0NywiZXhwIjoyMTAyNzE4NTQ3fQ.CKuUzqvcExsEro_bRBxHcL0XvRlh7RwKALjjVjsqnQk"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"in_title\": \"{{ $('Loop Over Items').item.json.title?.replaceAll('\"', \"'\") }}\",\n  \"in_event_day\": \"{{ $('Schedule Trigger').item.json['Day of week'] }}\",\n  \"in_start_time\": \"{{ $('Loop Over Items').item.json.start_time?.replaceAll('\"', \"'\") }}\",\n  \"in_end_time\": \"{{ $('Loop Over Items').item.json.end_time?.replaceAll('\"', \"'\") }}\",\n  \"in_location\": \"{{ $('Loop Over Items').item.json.location?.replaceAll('\"', \"'\") }}\",\n  \"in_source\": \"{{ $('Loop Over Items').item.json.source?.replaceAll('\"', \"'\") }}\",\n  \"in_summary\": \"{{ $('Loop Over Items').item.json.summary?.replaceAll('\"', \"'\") }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3376,
+        -144
+      ],
+      "id": "5b09fd31-5ed5-4e41-9cbd-8569ec7fa4b7",
+      "name": "activate SQL function in SUPA BASE"
+    },
+    {
+      "parameters": {
+        "chatId": "-5322826941",
+        "text": "= {{ $('Schedule Trigger').item.json['Readable date'] }} אין התרעות חדשות נכון ל",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3552,
+        288
+      ],
+      "id": "f78883cd-0163-406d-aecb-69fec9db542b",
+      "name": "Send a text message1",
+      "webhookId": "f9cfde88-d347-43ae-ace2-582bfbc69736",
+      "credentials": {
+        "telegramApi": {
+          "id": "2gA8A8ly6n1u2GNv",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b99c5e19-5df6-44a9-90b5-0e1fc5c11477",
+              "leftValue": "={{ $json.data.toLowerCase() }}",
+              "rightValue": "skipped",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "a9a35aaf-956d-4cf2-a621-e3f40d9bd82a",
+              "leftValue": "={{ $('Loop Over Items').item.json.is_protest }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3680,
+        -144
+      ],
+      "id": "580d396c-e93c-4ebc-b472-c29001470c69",
+      "name": "האם זה דיווח הפגנה ולא קיים בדאטה בייס"
+    },
+    {
+      "parameters": {
+        "chatId": "-5322826941",
+        "text": "={{ $('הרכבת הודעה עצמה ').item.json.msg }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4032,
+        -336
+      ],
+      "id": "9709c9ab-daa4-425e-bd3f-97b28023722d",
+      "name": "שלח דיווח",
+      "webhookId": "f56aef02-68cc-4c23-a0f6-ebb3ffe071b0",
+      "credentials": {
+        "telegramApi": {
+          "id": "2gA8A8ly6n1u2GNv",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\n\nconst formattedNews = allItems.map((item, index) => {\n  const title = item.json.time || '';\n  const desc = item.json.flash || '';\n  const source  = item.json.source;\n  return `${index + 1}. ${title} ${source} ${desc}`.trim();\n}).join('\\n');\n\n// מחזיר Item יחיד שנושא את כל הטקסט המאוחד\nreturn [{\n  json: {\n    combined_news_http: formattedNews\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        -448
+      ],
+      "id": "fe6a1319-6b70-47d3-9bb0-8636bae2e280",
+      "name": "make repond into text in JS1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "99b8077d-683a-4c37-83d5-acd818b9f141",
+              "name": "send_msg",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3888,
+        -144
+      ],
+      "id": "e9be5215-b238-4334-8552-2d77381957df",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const send_msg = false\n\nreturn {\n\"send_msg\": send_msg\n  \n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        -144
+      ],
+      "id": "0abcc248-bc74-4a17-8c84-ad43c6db53dd",
+      "name": "send msg "
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c200367e-ac67-441b-a3b6-4fee83c48d51",
+              "leftValue": "={{ $('send msg ').item.json.send_msg }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2992,
+        176
+      ],
+      "id": "bd5289fc-fb19-4fda-bb65-b44a8899a30f",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS YNET JSON",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS CH 14",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS WALLA NEWS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "send msg ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "חדשות 12 כל החדשות": {
+      "main": [
+        [
+          {
+            "node": "חדשות 12 פירוק מידע מיותר ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "מערך של הפגנות מתשובת AI": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "הרכבת הודעה עצמה ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "הרכבת הודעה עצמה ": {
+      "main": [
+        [
+          {
+            "node": "activate SQL function in SUPA BASE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS YNET JSON": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS CH 14": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "RSS WALLA NEWS": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "make repond into text in JS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "חמל ": {
+      "main": [
+        [
+          {
+            "node": "חמל פירוק מידע מיותר ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "make repond into text in JS": {
+      "main": [
+        [
+          {
+            "node": "חדשות 12 כל החדשות",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "חמל ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "חדשות 12 פירוק מידע מיותר ": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "חמל פירוק מידע מיותר ": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "make repond into text in JS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "activate SQL function in SUPA BASE": {
+      "main": [
+        [
+          {
+            "node": "האם זה דיווח הפגנה ולא קיים בדאטה בייס",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        []
+      ]
+    },
+    "האם זה דיווח הפגנה ולא קיים בדאטה בייס": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "שלח דיווח": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "make repond into text in JS1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "שלח דיווח",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send msg ": {
+      "main": [
+        [
+          {
+            "node": "מערך של הפגנות מתשובת AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3496915c-a7c5-42d8-afa3-56bdb5b52458",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c2271feb5677333f89eb5c34660f2d35fa71ac9d582a710d205cc245e0bbef4a"
+  },
+  "nodeGroups": [],
+  "id": "fDi4iskwaIkn1ouZ",
+  "tags": []
+}
