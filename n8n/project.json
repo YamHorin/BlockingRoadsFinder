@@ -264,11 +264,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "sb_publishable_x3S2fsnZKnDaUkU-QiNObg_HgW7UTVT"
+              "value": ""
             },
             {
               "name": "Authorization",
-              "value": "=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJubnJ0dHVjeGtyaWx4eXVjd3hzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzE0MjU0NywiZXhwIjoyMTAyNzE4NTQ3fQ.CKuUzqvcExsEro_bRBxHcL0XvRlh7RwKALjjVjsqnQk"
+              "value": "=Bearer "
             }
           ]
         },
