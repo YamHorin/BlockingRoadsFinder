@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // TODO: replace with the real backend endpoint once it exists
 const LEAD_SUBMIT_URL = '/api/leads';
@@ -135,7 +136,12 @@ export class LandingPageComponent implements OnInit {
         ip
       };
 
-      this.http.post(LEAD_SUBMIT_URL, payload).subscribe({
+      const headers = new HttpHeaders({
+        apikey: environment.supabaseAnonKey,
+        Authorization: `Bearer ${environment.supabaseAnonKey}`
+      });
+
+      this.http.post(LEAD_SUBMIT_URL, payload, { headers }).subscribe({
         next: () => {
           this.isLoading = false;
           this.isLeadModalOpen = false;
