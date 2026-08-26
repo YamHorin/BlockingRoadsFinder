@@ -110,7 +110,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const mapDays = new Map([\n  [\"Sunday\", \"ראשון\"],\n  [\"Monday\", \"שני\"],\n  [\"Tuesday\", \"שלישי\"],\n  [\"Wednesday\", \"רביעי\"],\n  [\"Thursday\", \"חמישי\"],\n  [\"Friday\", \"שישי\"],\n  [\"Saturday\", \"שבת\"]\n]);\n\n// חילוץ מערך הכבישים בצורה בטוחה\nlet roadsMsg = \"\";\nconst inputJson = $input.first().json;\nconst aiJson = $('מערך של הפגנות מתשובת AI').first()?.json;\n\nif (aiJson && Array.isArray(aiJson.blocked_roads) && aiJson.blocked_roads.length > 0) {\n  roadsMsg = aiJson.blocked_roads.join(\" , \");\n} else {\n  roadsMsg = \"אין חסימות ידועות\";\n}\n\n// חילוץ יתר השדות\nconst dayName = $('Schedule Trigger').first()?.json?.['Day of week'];\nconst curDay = mapDays.get(dayName) || \"לא צוין\";\n\nconst startTime = inputJson.start_time || \"לא צוין\";\nconst endTime = inputJson.end_time || \"לא צוין\";\nconst place = inputJson.location || \"לא צוין\";\nconst title = inputJson.title || \"\";\nconst summary = inputJson.summary || \"\";\nconst source = inputJson.source || \"\";\n\n// תו RLM לכיווניות RTL\nconst RLM = \"\\u200F\";\n\nconst msg = \n`🚨 *התראת הפגנה חדשה* 🚨\n\n${RLM}📌 *${title}*\n\n🗓️ *יום:* יום ${curDay}\n⏰ *שעות:* ${startTime} - ${endTime}\n📍 *מיקום:* ${place}\n📰 *מקור:* ${source}\n\n📝 *תקציר:*\n${summary}\n\n${RLM}🛣️ *כבישים חסומים:* ${roadsMsg}`;\n\nreturn [{\n  json: {\n    msg: msg\n  }\n}];"
+        "jsCode": "const mapDays = new Map([\n  [\"Sunday\", \"ראשון\"],\n  [\"Monday\", \"שני\"],\n  [\"Tuesday\", \"שלישי\"],\n  [\"Wednesday\", \"רביעי\"],\n  [\"Thursday\", \"חמישי\"],\n  [\"Friday\", \"שישי\"],\n  [\"Saturday\", \"שבת\"]\n]);\n\n// חילוץ מערך הכבישים בצורה בטוחה\nlet roadsMsg = \"\";\nconst inputJson = $input.first().json;\nconst aiJson = $('מערך של הפגנות מתשובת AI').first()?.json;\n\nif (aiJson && Array.isArray(aiJson.blocked_roads) && aiJson.blocked_roads.length > 0) {\n  roadsMsg = aiJson.blocked_roads.join(\" , \");\n} else {\n  roadsMsg = \"אין חסימות ידועות\";\n}\n\n// חילוץ יתר השדות\nconst dayName = $('Schedule Trigger').first()?.json?.['Day of week'];\nconst curDay = mapDays.get(dayName) || \"לא צוין\";\n\nconst startTime = inputJson.start_time || \"לא צוין\";\nconst endTime = inputJson.end_time || \"לא צוין\";\nconst place = inputJson.location || \"לא צוין\";\nconst title = inputJson.title || \"\";\nconst summary = inputJson.summary || \"\";\nconst source = inputJson.source || \"\";\n\n// תו RLM לכיווניות RTL\nconst RLM = \"\\u200F\";\n\nconst msg = \n`🚨 *התראת הפגנה חדשה* 🚨\n\n$('excract current date time ').first().json.curretnDateTime\n\n${RLM}📌 *${title}*\n\n🗓️ *יום:* יום ${curDay}\n⏰ *שעות:* ${startTime} - ${endTime}\n📍 *מיקום:* ${place}\n📰 *מקור:* ${source}\n\n📝 *תקציר:*\n${summary}\n\n${RLM}🛣️ *כבישים חסומים:* ${roadsMsg}`;\n\nreturn [{\n  json: {\n    msg: msg\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -264,11 +264,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "sb_publishable_x3S2fsnZKnDaUkU-QiNObg_HgW7UTVT"
+              "value": "key in supa bas"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJubnJ0dHVjeGtyaWx4eXVjd3hzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzE0MjU0NywiZXhwIjoyMTAyNzE4NTQ3fQ.CKuUzqvcExsEro_bRBxHcL0XvRlh7RwKALjjVjsqnQk"
+              "value": "=Bearer "
             }
           ]
         },
@@ -312,7 +312,8 @@
           "id": "2gA8A8ly6n1u2GNv",
           "name": "Telegram account"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -461,6 +462,19 @@
       ],
       "id": "bd5289fc-fb19-4fda-bb65-b44a8899a30f",
       "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "var currentdate = new Date();\n\n// Options to ensure double digits (e.g., 05/04/2026 @ 09:05:02)\nvar options = {\n  timeZone: 'Asia/Jerusalem',\n  day: '2-digit',\n  month: '2-digit',\n  year: 'numeric',\n  hour: '2-digit',\n  minute: '2-digit',\n  second: '2-digit',\n  hour12: false // Set to true if you prefer 12-hour AM/PM format\n};\n\n// Format parts to match your exact output layout\nvar parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(currentdate);\nvar p = {};\nparts.forEach(function(item) { p[item.type] = item.value; });\n\nvar datetime =  p.day + \"/\" + p.month + \"/\" + p.year + \"  \" + p.hour + \":\" + p.minute + \":\" + p.second;\nreturn {\"curretnDateTime\" : datetime}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        -464
+      ],
+      "id": "909a7e38-3a08-4b8a-8a35-c9c1e569c97a",
+      "name": "excract current date time "
     }
   ],
   "pinData": {},
@@ -490,7 +504,7 @@
       "main": [
         [
           {
-            "node": "send msg ",
+            "node": "excract current date time ",
             "type": "main",
             "index": 0
           }
@@ -740,6 +754,17 @@
           }
         ]
       ]
+    },
+    "excract current date time ": {
+      "main": [
+        [
+          {
+            "node": "send msg ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -748,7 +773,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "3496915c-a7c5-42d8-afa3-56bdb5b52458",
+  "versionId": "7d5b91b9-4858-4f79-a52e-04f66f3b6310",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c2271feb5677333f89eb5c34660f2d35fa71ac9d582a710d205cc245e0bbef4a"
