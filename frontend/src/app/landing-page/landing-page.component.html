@@ -1,0 +1,105 @@
+<!-- ================================================================================= -->
+<!-- קובץ: landing-page.component.html                                                 -->
+<!-- פרויקט: TrafficAlert - דף נחיתה ראשי במבנה סקציות מרובות (Long-form Page)          -->
+<!-- ================================================================================= -->
+<!-- תפקיד ומבנה:                                                                      -->
+<!-- 1. Header: סרגל ניווט ומותג ראשי.                                                  -->
+<!-- 2. Section Hero & Checkout: הצעת הערך המרכזית + כרטיס המחירון והנעה לסליקה.      -->
+<!-- 3. Section Stats: מוני ספירה אקטיביים להרשמת המשתמש (Social Proof).               -->
+<!-- 4. Section Sources: תצוגת 6 מקורות חדשות רשמיים בגווני אפור לביסוס אמינות.        -->
+<!-- 5. Section Solutions: 3 כרטיסיות הסבר מפורטות על היתרונות הטכנולוגיים של המערכת.   -->
+<!-- ================================================================================= -->
+
+<div class="landing-wrapper" dir="rtl">
+  
+  <!-- 1. סרגל ניווט עליון (Navbar) -->
+  <header class="navbar">
+    <div class="logo"><span class="logo-accent">Traffic</span>Alert</div>
+    <button class="btn-secondary" (click)="onStartPayment()">התחל עכשיו</button>
+  </header>
+
+  <!-- 2. סקציית Hero & Checkout (אזור ההמרה והסליקה הראשי) -->
+  <section class="section-hero">
+    <!-- תוכן שיווקי ראשי -->
+    <div class="hero-content">
+      <div class="badge">🚀 מבוסס AI - דיווחים בזמן אמת</div>
+      <h1 class="main-title">כל דיווחי התנועה והחסימות <br><span class="highlight">ישירות לטלגרם שלך</span></h1>
+      <p class="subtitle">המערכת אוספת מבזקים מכל גופי החדשות בישראל, מסננת עיכובים מיותרים באמצעות AI, ומקפיצה לך רק מה שבאמת משפיע על הדרך שלך.</p>
+    </div>
+
+    <!-- כרטיס מחירון וסליקה -->
+    <div class="hero-pricing">
+      <div class="pricing-card">
+        <div class="popular-tag">הכי פופולרי</div>
+        <h2>{{ pricingPlan.name }}</h2>
+        <p class="plan-desc">דיווחים ללא הגבלה + סינון בזמן אמת</p>
+        <div class="price-display">
+          <span class="amount">{{ pricingPlan.currency }}{{ pricingPlan.price }}</span>
+          <span class="period">/ ל{{ pricingPlan.period }}</span>
+        </div>
+        <!-- רשימת יתרונות דינמית -->
+        <ul class="features-list">
+          <li *ngFor="let feature of pricingPlan.features"><span class="check-icon">✓</span> {{ feature }}</li>
+        </ul>
+        <!-- כפתור הפעלה עם מנגנון נטרול בזמן טעינה -->
+        <button class="btn-checkout" (click)="onStartPayment()" [disabled]="isLoading">
+          {{ isLoading ? 'טוען סליקה...' : 'עבור לתשלום מאובטח' }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. סקציית מדדים מספריים אקטיביים (Stats Section) -->
+  <section class="section-stats">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-number">+{{ eventsDisplay }}</span>
+        <span class="stat-title">אירועים מסוננים</span>
+        <div class="stat-underline"></div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-number">{{ sourcesDisplay }}</span>
+        <span class="stat-title">מקורות חדשות רשמיים</span>
+        <div class="stat-underline"></div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-number">{{ accuracyDisplay }}%</span>
+        <span class="stat-title">דיוק בזיהוי AI</span>
+        <div class="stat-underline"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. סקציית מקורות מידע ושותפים (Sources Grid) -->
+  <section class="section-sources">
+    <h3 class="sources-heading">מקורות המידע המסונכרנים בלייב</h3>
+    <div class="sources-grid">
+      <div class="source-card">ynet</div>
+      <div class="source-card ch12">חדשות 12</div>
+      <div class="source-card walla">!walla</div>
+      <div class="source-card ch14">14</div>
+      <div class="source-card hamal">חמ״ל</div>
+      <div class="source-card maariv">מעריב</div>
+    </div>
+  </section>
+
+  <!-- 5. סקציית פתרונות ויתרונות (Our Solutions) -->
+  <section class="section-solutions">
+    <h2 class="solutions-title">מה הופך את המערכת למדויקת ביותר?</h2>
+    <div class="solutions-grid">
+      <div class="solution-card">
+        <h3>סינון AI מתקדם</h3>
+        <p>זיהוי בין עיכובים קלים והפגנות חוסמות דרכים מרכזיות.</p>
+      </div>
+      <div class="solution-card">
+        <h3>התראות טלגרם מיידיות</h3>
+        <p>דיווח קופץ לנייד שניות ספורות לאחר פרסום המבזק.</p>
+      </div>
+      <div class="solution-card">
+        <h3>איחוד 6 מקורות</h3>
+        <p>מניעת ספאם והודעות כפולות מכל גופי החדשות בארץ.</p>
+      </div>
+    </div>
+  </section>
+
+</div>

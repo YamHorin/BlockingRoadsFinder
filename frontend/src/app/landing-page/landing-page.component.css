@@ -1,0 +1,300 @@
+/* =========================================================================
+   קובץ: landing-page.component.css
+   פרויקט: TrafficAlert - דף נחיתה ארוך (Multi-section / Long-form Page)
+   מטרה: עיצוב מודרני ברמת הייטק/SaaS, תמיכה מלאה ב-RTL, וחלוקה לסקציות.
+   ========================================================================= */
+
+/* ייבוא פונט Rubik מ-Google Fonts לקבלת מראה הייטקיסטי ונקי בעברית */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap');
+
+/* --- מעטפת עמוד ראשית (Global Layout Wrapper) --- */
+.landing-wrapper {
+  font-family: 'Rubik', system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc; /* רקע אפור-כחלחל עדין מאוד (Slate-50) */
+  color: #0f172a;            /* טקסט כהה לקריאות מקסימלית (Slate-900) */
+  min-height: 100vh;
+  padding-bottom: 80px;      /* מרווח תחתון לסיום העמוד */
+}
+
+/* --- סרגל ניווט עליון (Navbar) --- */
+.navbar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo { 
+  font-size: 24px; 
+  font-weight: 800; 
+}
+
+.logo-accent { 
+  color: #2563eb; /* כחול מותג בולט (Blue-600) */
+}
+
+/* =========================================================================
+   סקציה 1: Hero & Checkout (אזור ההמרה והסליקה הראשי)
+   מטרה: הצגת הצעת הערך וכרטיס התשלום במבנה של 2 עמודות (Grid)
+   ========================================================================= */
+.section-hero {
+  max-width: 1100px;
+  margin: 40px auto 80px auto;
+  padding: 0 32px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr; /* חלוקה: 60% תוכן שיווקי, 40% כרטיס מחירון */
+  gap: 40px;
+  align-items: center;
+}
+
+/* תגית AI בולטת מעל הכותרת */
+.badge {
+  display: inline-block;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  margin-bottom: 16px;
+}
+
+.main-title { 
+  font-size: 44px; 
+  font-weight: 800; 
+  line-height: 1.2; 
+  margin-bottom: 20px; 
+}
+
+.highlight { 
+  color: #2563eb; 
+}
+
+.subtitle { 
+  font-size: 18px; 
+  color: #475569; 
+  line-height: 1.6; 
+}
+
+/* כרטיס המחירון והסליקה */
+.pricing-card {
+  background: #ffffff;
+  border: 2px solid #2563eb; /* מסגרת כחולה להדגשה */
+  border-radius: 24px;
+  padding: 32px 28px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.12); /* צל יוקרתי רך */
+}
+
+/* תגית "הכי פופולרי" הממוקמת במרכז בחלק העליון */
+.popular-tag {
+  position: absolute; 
+  top: 0; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  background: #2563eb; 
+  color: #ffffff; 
+  font-size: 12px; 
+  font-weight: 700; 
+  padding: 4px 16px; 
+  border-radius: 9999px;
+}
+
+.amount { 
+  font-size: 42px; 
+  font-weight: 800; 
+}
+
+.period { 
+  color: #64748b; 
+  font-size: 15px; 
+}
+
+/* רשימת היתרונות בתוך הכרטיס */
+.features-list { 
+  list-style: none; 
+  padding: 0; 
+  margin: 20px 0 28px 0; 
+  text-align: right; 
+}
+
+.features-list li { 
+  padding: 8px 0; 
+  color: #334155; 
+  font-size: 14px; 
+  border-bottom: 1px solid #f1f5f9; 
+}
+
+.check-icon { 
+  color: #16a34a; /* ירוק אישור */
+  font-weight: 800; 
+  margin-left: 8px; 
+}
+
+/* כפתורים */
+.btn-checkout, .btn-secondary { 
+  border: none; 
+  cursor: pointer; 
+  font-weight: 700; 
+  border-radius: 12px; 
+  transition: all 0.2s ease;
+}
+
+.btn-checkout { 
+  width: 100%; 
+  background: #0f172a; 
+  color: #ffffff; 
+  font-size: 16px; 
+  padding: 14px; 
+}
+
+.btn-checkout:hover {
+  background: #1e293b;
+}
+
+.btn-secondary { 
+  background: #ffffff; 
+  border: 1px solid #e2e8f0; 
+  padding: 8px 18px; 
+  font-size: 14px; 
+}
+
+/* =========================================================================
+   סקציה 2: מדדים ענקיים (Stats Section)
+   מטרה: הצגת נתונים מספריים בולטים ברשת של 3 טוריות
+   ========================================================================= */
+.section-stats {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 60px 32px;
+  margin-bottom: 80px;
+}
+
+.stats-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 עמודות שוות */
+  gap: 32px;
+  text-align: center;
+}
+
+.stat-number { 
+  font-size: 48px; 
+  font-weight: 800; 
+  color: #0f172a; 
+  display: block; 
+  margin-bottom: 8px; 
+}
+
+.stat-title { 
+  font-size: 16px; 
+  color: #64748b; 
+  font-weight: 600; 
+}
+
+/* פס כחול קטן מתחת לכל מדד לעיצוב נקי */
+.stat-underline { 
+  width: 40px; 
+  height: 3px; 
+  background: #2563eb; 
+  margin: 12px auto 0 auto; 
+  border-radius: 2px; 
+}
+
+/* =========================================================================
+   סקציה 3: מקורות מידע וגופי חדשות (Sources Grid)
+   מטרה: תצוגת לוגואים אופקית (6 עמודות) בגווני אפור לביסוס אמינות
+   ========================================================================= */
+.section-sources { 
+  max-width: 1000px; 
+  margin: 0 auto 80px auto; 
+  padding: 0 32px; 
+  text-align: center; 
+}
+
+.sources-heading { 
+  font-size: 20px; 
+  color: #64748b; 
+  margin-bottom: 28px; 
+  font-weight: 600; 
+}
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6 קופסאות בשורה אחת */
+  gap: 16px;
+}
+
+/* כרטיסיית מקור מידע בודדת */
+.source-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 800;
+  color: #475569;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: grayscale(100%); /* אפקט אפור מונוכרומטי */
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.source-card:hover {
+  filter: grayscale(0%); /* הופעת צבע בעת מעבר עכבר */
+  opacity: 1;
+}
+
+/* =========================================================================
+   סקציה 4: פתרונות ויתרונות מרכזיים (Our Solutions)
+   מטרה: פירוט 3 יתרונות טכנולוגיים בכרטיסיות מופרדות
+   ========================================================================= */
+.section-solutions { 
+  max-width: 1000px; 
+  margin: 0 auto; 
+  padding: 0 32px; 
+  text-align: center; 
+}
+
+.solutions-title { 
+  font-size: 28px; 
+  font-weight: 800; 
+  margin-bottom: 36px; 
+}
+
+.solutions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 כרטיסיות מידע */
+  gap: 24px;
+}
+
+.solution-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 28px 20px;
+  border-radius: 16px;
+  text-align: right; /* יישור טקסט לימין לשמירה על RTL */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.solution-card h3 { 
+  font-size: 18px; 
+  font-weight: 700; 
+  margin-bottom: 8px; 
+  color: #2563eb; 
+}
+
+.solution-card p { 
+  font-size: 14px; 
+  color: #64748b; 
+  line-height: 1.5; 
+  margin: 0; 
+}
