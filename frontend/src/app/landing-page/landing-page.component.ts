@@ -2,9 +2,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { catchError, of } from 'rxjs';
 
 // TODO: replace with the real backend endpoint once it exists
 const LEAD_SUBMIT_URL = '/api/leads';
+const IP_LOOKUP_URL = 'https://api.ipify.org?format=json';
 
 /**
  * Component: LandingPageComponent
@@ -34,7 +36,7 @@ export class LandingPageComponent implements OnInit {
 
   pricingPlan = {
     name: 'מנוי חודשי מלא',
-    price: 29,
+    price: 10,
     currency: '₪',
     period: 'חודש',
     features: [
@@ -119,20 +121,31 @@ export class LandingPageComponent implements OnInit {
     this.leadSubmitError = null;
     const { firstName, lastName, email, phone } = this.leadForm.value;
 
+    //TODO create the SQL function that insert the info into supa base in http post request
 
-    //TODO create the SQL function that insert the info into supa base in http post request 
+    this.http.get<{ ip: string }>(IP_LOOKUP_URL).pipe(
+      catchError(() => of({ ip: null }))
+    ).subscribe(({ ip }) => {
+      const payload = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        userAgent: navigator.userAgent,
+        ip
+      };
 
-
-    this.http.post(LEAD_SUBMIT_URL, this.leadForm.value).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.isLeadModalOpen = false;
-       // alert('בשלב הבא נחבר את ה-API של משולם שיפתח את חלון הסליקה!');
-      },
-      error: () => {
-        this.isLoading = false;
-        this.leadSubmitError = 'אירעה שגיאה בשליחת הפרטים. נסו שוב.';
-      }
+      this.http.post(LEAD_SUBMIT_URL, payload).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.isLeadModalOpen = false;
+         // alert('בשלב הבא נחבר את ה-API של משולם שיפתח את חלון הסליקה!');
+        },
+        error: () => {
+          this.isLoading = false;
+          this.leadSubmitError = 'אירעה שגיאה בשליחת הפרטים. נסו שוב.';
+        }
+      });
     });
   }
 }
