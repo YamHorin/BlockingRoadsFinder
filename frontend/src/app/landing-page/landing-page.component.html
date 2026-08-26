@@ -30,7 +30,7 @@
     <!-- כרטיס מחירון וסליקה -->
     <div class="hero-pricing">
       <div class="pricing-card">
-        <div class="popular-tag">הכי פופולרי</div>
+        <div class="popular-tag"></div>
         <h2>{{ pricingPlan.name }}</h2>
         <p class="plan-desc">דיווחים ללא הגבלה + סינון בזמן אמת</p>
         <div class="price-display">
@@ -101,5 +101,53 @@
       </div>
     </div>
   </section>
+
+  <!-- פופאפ איסוף פרטי לקוח לפני מעבר לסליקה -->
+  <div class="modal-overlay" *ngIf="isLeadModalOpen" (click)="closeLeadModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeLeadModal()" aria-label="סגור">✕</button>
+      <h2 class="modal-title">השאירו פרטים להמשך לתשלום</h2>
+
+      <form [formGroup]="leadForm" (ngSubmit)="submitLead()" class="lead-form">
+        <div class="form-field">
+          <label for="firstName">שם פרטי</label>
+          <input id="firstName" type="text" formControlName="firstName" />
+          <span class="field-error" *ngIf="leadForm.get('firstName')?.invalid && leadForm.get('firstName')?.touched">
+            שדה חובה
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="lastName">שם משפחה</label>
+          <input id="lastName" type="text" formControlName="lastName" />
+          <span class="field-error" *ngIf="leadForm.get('lastName')?.invalid && leadForm.get('lastName')?.touched">
+            שדה חובה
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="email">אימייל</label>
+          <input id="email" type="email" formControlName="email" />
+          <span class="field-error" *ngIf="leadForm.get('email')?.invalid && leadForm.get('email')?.touched">
+            כתובת אימייל לא תקינה
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="phone">טלפון</label>
+          <input id="phone" type="tel" formControlName="phone" placeholder="05XXXXXXXX" />
+          <span class="field-error" *ngIf="leadForm.get('phone')?.invalid && leadForm.get('phone')?.touched">
+            מספר טלפון לא תקין
+          </span>
+        </div>
+
+        <p class="field-error" *ngIf="leadSubmitError">{{ leadSubmitError }}</p>
+
+        <button type="submit" class="btn-checkout" [disabled]="isLoading">
+          {{ isLoading ? 'שולח...' : 'המשך לתשלום מאובטח' }}
+        </button>
+      </form>
+    </div>
+  </div>
 
 </div>

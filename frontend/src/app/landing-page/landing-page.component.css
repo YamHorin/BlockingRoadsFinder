@@ -292,9 +292,88 @@
   color: #2563eb; 
 }
 
-.solution-card p { 
-  font-size: 14px; 
-  color: #64748b; 
-  line-height: 1.5; 
-  margin: 0; 
+.solution-card p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* =========================================================================
+   סקציה 5: פופאפ איסוף פרטי לקוח (Lead Modal)
+   ========================================================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.25);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #64748b;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.lead-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+}
+
+.form-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-field input {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 13px;
 }

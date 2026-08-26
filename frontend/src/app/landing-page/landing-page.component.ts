@@ -1,5 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
+// TODO: replace with the real backend endpoint once it exists
+const LEAD_SUBMIT_URL = '/api/leads';
 
 /**
  * Component: LandingPageComponent
@@ -9,13 +14,18 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.css']
 })
 export class LandingPageComponent implements OnInit {
-  
+
   isLoading: boolean = false;
+
+  // מודל איסוף פרטי הלקוח לפני מעבר לסליקה
+  isLeadModalOpen: boolean = false;
+  leadForm: FormGroup;
+  leadSubmitError: string | null = null;
 
   // ערכי תצוגה למונים
   eventsDisplay: string = '0';
@@ -35,7 +45,18 @@ export class LandingPageComponent implements OnInit {
     ]
   };
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient,
+    private fb: FormBuilder
+  ) {
+    this.leadForm = this.fb.group({
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern(/^0\d{8,9}$/)]]
+    });
+  }
 
   ngOnInit(): void {
     this.animateCounters();
@@ -75,11 +96,43 @@ export class LandingPageComponent implements OnInit {
     }, stepTime);
   }
 
+  /**
+   * פתיחת הפופאפ לאיסוף פרטי הלקוח לפני מעבר לסליקה
+   */
   onStartPayment(): void {
+    this.leadSubmitError = null;
+    this.leadForm.reset();
+    this.isLeadModalOpen = true;
+  }
+
+  closeLeadModal(): void {
+    this.isLeadModalOpen = false;
+  }
+
+  submitLead(): void {
+    if (this.leadForm.invalid) {
+      this.leadForm.markAllAsTouched();
+      return;
+    }
+
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-      alert('בשלב הבא נחבר את ה-API של משולם שיפתח את חלון הסליקה!');
-    }, 1200);
+    this.leadSubmitError = null;
+    const { firstName, lastName, email, phone } = this.leadForm.value;
+
+
+    //TODO create the SQL function that insert the info into supa base in http post request 
+
+
+    this.http.post(LEAD_SUBMIT_URL, this.leadForm.value).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.isLeadModalOpen = false;
+       // alert('בשלב הבא נחבר את ה-API של משולם שיפתח את חלון הסליקה!');
+      },
+      error: () => {
+        this.isLoading = false;
+        this.leadSubmitError = 'אירעה שגיאה בשליחת הפרטים. נסו שוב.';
+      }
+    });
   }
 }
