@@ -6,8 +6,8 @@
         "rule": {
           "interval": [
             {
-              "field": "minutes",
-              "minutesInterval": 20
+              "field": "cronExpression",
+              "expression": "*/15 6-21 * * *"
             }
           ]
         }
@@ -32,7 +32,7 @@
         "messages": {
           "values": [
             {
-              "content": "=אתה עוזר AI המתמחה בניתוח מבזקים וכתבות חדשותיות על הפגנות, אירועים חריגים וחסימות כבישים בישראל.\n\nתפקידך הוא לקבל טקסט של כתבה/מבזק ולהוציא ממנו נתונים מובנים.\n\nהוראות ביצוע:\n1. נתח את הטקסט בזהירות.\n2. קבע אם הטקסט מתאר הפגנה, מחאה או חסימת כבישים קיימת/מתוכננת.\n3. חלץ את הפרטים הבאים רק אם הם מופיעים או משתמעים מהטקסט.\n4. החזר אך ורק אובייקט JSON תקין ללא שום טקסט נוסף, ללא הקדמות וללא Markdown code blocks.\n5. במיקום ההפגנות מצא את הכבישים המרכזיים שקשורים להפגנות , לדוגמא צומת פתח תקווה בני ברק - כביש 4 \n6. הצג רק דיווחים שקשורים לחסימת כבישים \\ הפגנות \\מחאות שיכולות להשפיע על העומס בכבישים\n\n\nפורמט ה-JSON הנדרש:\n{\n  \"is_protest\": true/false,\n  \"title\": \"כותרת קצרה וקולעת של האירוע\",\n  \"location\": \"שם המיקום המדויק ביותר המוזכר (למשל: צומת קפלן, תל אביב / מחלף השלום)\",\n  \"date_description\": \"תאריך או יום (למשל: היום / מחר / יום חמישי 15.08)\",\n  \"start_time\": \"שעת התחלה (למשל: 18:00, או 'לא צוין')\",\n  \"end_time\": \"שעת סיום משוערת (או 'לא צוין')\",\n  \"blocked_roads\": [\"רשימה\", \"של\", \"רחובות/כבישים\", \"חסומים\"],\n  \"summary\": \"תקציר של 1-2 משפטים על מהות המחאה וההשפעה על התנועה\"\n  \"source\" : מקור הדיווח \n}\nהנה ה DATA שאתה מנתח :\n{{ $('make repond into text in JS').item.json.combined_news }}\n\n{{ $json.combined_news_http }}\n\n"
+              "content": "=אתה עוזר AI המתמחה בניתוח מבזקים וכתבות חדשותיות על הפגנות, אירועים חריגים וחסימות כבישים בישראל.\n\nתפקידך הוא לקבל טקסט של כתבה/מבזק ולהוציא ממנו נתונים מובנים.\n\nהוראות ביצוע:\n1. נתח את הטקסט בזהירות.\n2. קבע אם הטקסט מתאר הפגנה, מחאה או חסימת כבישים קיימת/מתוכננת.\n3. חלץ את הפרטים הבאים רק אם הם מופיעים או משתמעים מהטקסט.\n4. החזר אך ורק אובייקט JSON תקין ללא שום טקסט נוסף, ללא הקדמות וללא Markdown code blocks.\n5. במיקום ההפגנות מצא את הכבישים המרכזיים שקשורים להפגנות , לדוגמא צומת פתח תקווה בני ברק - כביש 4 \n6. הצג רק דיווחים שקשורים לחסימת כבישים \\ הפגנות \\מחאות שיכולות להשפיע על העומס בכבישים\n\n\nפורמט ה-JSON הנדרש:\n{\n  \"is_protest\": true/false,\n  \"title\": \"כותרת קצרה וקולעת של האירוע\",\n  \"location\": \"שם המיקום המדויק ביותר המוזכר (למשל: צומת קפלן, תל אביב / מחלף השלום)\",\n  \"date_description\": \"תאריך או יום (למשל: היום / מחר / יום חמישי 15.08)\",\n  \"start_time\": \"שעת התחלה (למשל: 18:00, או 'לא צוין')\",\n  \"end_time\": \"שעת סיום משוערת (למשל 20:00 או 'לא צוין')\",\n  \"blocked_roads\": [\"רשימה\", \"של\", \"רחובות/כבישים\", \"חסומים\"],\n  \"summary\": \"תקציר של 1-2 משפטים על מהות המחאה וההשפעה על התנועה\"\n  \"source\" : מקור הדיווח + לינק לאתר החדשות \\ לכתבה עצמה אם זמין לך בדאטה\n}\nהנה ה DATA שאתה מנתח :\n{{ $('make repond into text in JS').item.json.combined_news }}\n\n{{ $json.combined_news_http }}\n\n"
             }
           ]
         },
@@ -93,7 +93,9 @@
         -224
       ],
       "id": "bf386a60-3d08-4643-b903-31b705bd6782",
-      "name": "חדשות 12 כל החדשות"
+      "name": "חדשות 12 כל החדשות",
+      "disabled": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -110,7 +112,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const mapDays = new Map([\n  [\"Sunday\", \"ראשון\"],\n  [\"Monday\", \"שני\"],\n  [\"Tuesday\", \"שלישי\"],\n  [\"Wednesday\", \"רביעי\"],\n  [\"Thursday\", \"חמישי\"],\n  [\"Friday\", \"שישי\"],\n  [\"Saturday\", \"שבת\"]\n]);\n\n// חילוץ מערך הכבישים בצורה בטוחה\nlet roadsMsg = \"\";\nconst inputJson = $input.first().json;\nconst aiJson = $('מערך של הפגנות מתשובת AI').first()?.json;\n\nif (aiJson && Array.isArray(aiJson.blocked_roads) && aiJson.blocked_roads.length > 0) {\n  roadsMsg = aiJson.blocked_roads.join(\" , \");\n} else {\n  roadsMsg = \"אין חסימות ידועות\";\n}\n\n// חילוץ יתר השדות\nconst dayName = $('Schedule Trigger').first()?.json?.['Day of week'];\nconst curDay = mapDays.get(dayName) || \"לא צוין\";\n\nconst startTime = inputJson.start_time || \"לא צוין\";\nconst endTime = inputJson.end_time || \"לא צוין\";\nconst place = inputJson.location || \"לא צוין\";\nconst title = inputJson.title || \"\";\nconst summary = inputJson.summary || \"\";\nconst source = inputJson.source || \"\";\n\n// תו RLM לכיווניות RTL\nconst RLM = \"\\u200F\";\n\nconst msg = \n`🚨 *התראת הפגנה חדשה* 🚨\n\n$('excract current date time ').first().json.curretnDateTime\n\n${RLM}📌 *${title}*\n\n🗓️ *יום:* יום ${curDay}\n⏰ *שעות:* ${startTime} - ${endTime}\n📍 *מיקום:* ${place}\n📰 *מקור:* ${source}\n\n📝 *תקציר:*\n${summary}\n\n${RLM}🛣️ *כבישים חסומים:* ${roadsMsg}`;\n\nreturn [{\n  json: {\n    msg: msg\n  }\n}];"
+        "jsCode": "const mapDays = new Map([\n  [\"Sunday\", \"ראשון\"],\n  [\"Monday\", \"שני\"],\n  [\"Tuesday\", \"שלישי\"],\n  [\"Wednesday\", \"רביעי\"],\n  [\"Thursday\", \"חמישי\"],\n  [\"Friday\", \"שישי\"],\n  [\"Saturday\", \"שבת\"]\n]);\n\n// חילוץ מערך הכבישים בצורה בטוחה\nlet roadsMsg = \"\";\nconst inputJson = $input.first().json;\nconst aiJson = $('מערך של הפגנות מתשובת AI').first()?.json;\n\nif (aiJson && Array.isArray(aiJson.blocked_roads) && aiJson.blocked_roads.length > 0) {\n  roadsMsg = aiJson.blocked_roads.join(\" , \");\n} else {\n  roadsMsg = \"אין חסימות ידועות\";\n}\n\n// חילוץ יתר השדות\nconst dayName = $('Schedule Trigger').first()?.json?.['Day of week'];\nconst curDay = mapDays.get(dayName) || \"לא צוין\";\n\nconst startTime = inputJson.start_time || \"לא צוין\";\nconst endTime = inputJson.end_time || \"לא צוין\";\nconst place = inputJson.location || \"לא צוין\";\nconst title = inputJson.title || \"\";\nconst summary = inputJson.summary || \"\";\nconst source = inputJson.source || \"\";\n\n// תו RLM לכיווניות RTL\nconst RLM = \"\\u200F\";\n\nconst msg = \n`🚨 *התראת הפגנה חדשה* 🚨\n\n${RLM}📌 *${title}*\n\n🗓️ *יום:* יום ${curDay}\n⏰ *שעות:* ${startTime} - ${endTime}\n📍 *מיקום:* ${place}\n📰 *מקור:* ${source}\n\n📝 *תקציר:*\n${summary}\n\n${RLM}🛣️ *כבישים חסומים:* ${roadsMsg}`;\n\nreturn [{\n  json: {\n    msg: msg\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -135,7 +137,8 @@
         224
       ],
       "id": "7c540694-6abb-4357-9b9b-f4a84f80b4fc",
-      "name": "RSS YNET JSON"
+      "name": "RSS YNET JSON",
+      "disabled": true
     },
     {
       "parameters": {
@@ -167,7 +170,7 @@
     },
     {
       "parameters": {
-        "numberInputs": 3
+        "numberInputs": 5
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
@@ -203,7 +206,8 @@
         -448
       ],
       "id": "7dcb440d-f604-4e17-a527-2929987779cf",
-      "name": "חמל "
+      "name": "חמל ",
+      "disabled": true
     },
     {
       "parameters": {
@@ -229,7 +233,8 @@
         -224
       ],
       "id": "d2fd005d-fccb-405a-9fa4-6d2d88a19560",
-      "name": "חדשות 12 פירוק מידע מיותר "
+      "name": "חדשות 12 פירוק מידע מיותר ",
+      "disabled": true
     },
     {
       "parameters": {
@@ -242,7 +247,8 @@
         -448
       ],
       "id": "eb639162-05a7-45a2-9097-20653233fa05",
-      "name": "חמל פירוק מידע מיותר "
+      "name": "חמל פירוק מידע מיותר ",
+      "disabled": true
     },
     {
       "parameters": {},
@@ -253,7 +259,8 @@
         -448
       ],
       "id": "056959d0-c0be-4929-be03-15c68dd10fbb",
-      "name": "Merge1"
+      "name": "Merge1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -264,7 +271,7 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "key in supa bas"
+              "value": "api_KEY_SUPA"
             },
             {
               "name": "Authorization",
@@ -294,8 +301,8 @@
     },
     {
       "parameters": {
-        "chatId": "-5322826941",
-        "text": "= {{ $('Schedule Trigger').item.json['Readable date'] }} אין התרעות חדשות נכון ל",
+        "chatId": "-1004298156034",
+        "text": "=בדיקה",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
@@ -360,28 +367,6 @@
     },
     {
       "parameters": {
-        "chatId": "-5322826941",
-        "text": "={{ $('הרכבת הודעה עצמה ').item.json.msg }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        4032,
-        -336
-      ],
-      "id": "9709c9ab-daa4-425e-bd3f-97b28023722d",
-      "name": "שלח דיווח",
-      "webhookId": "f56aef02-68cc-4c23-a0f6-ebb3ffe071b0",
-      "credentials": {
-        "telegramApi": {
-          "id": "2gA8A8ly6n1u2GNv",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "jsCode": "const allItems = $input.all();\n\nconst formattedNews = allItems.map((item, index) => {\n  const title = item.json.time || '';\n  const desc = item.json.flash || '';\n  const source  = item.json.source;\n  return `${index + 1}. ${title} ${source} ${desc}`.trim();\n}).join('\\n');\n\n// מחזיר Item יחיד שנושא את כל הטקסט המאוחד\nreturn [{\n  json: {\n    combined_news_http: formattedNews\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
@@ -391,7 +376,8 @@
         -448
       ],
       "id": "fe6a1319-6b70-47d3-9bb0-8636bae2e280",
-      "name": "make repond into text in JS1"
+      "name": "make repond into text in JS1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -475,6 +461,90 @@
       ],
       "id": "909a7e38-3a08-4b8a-8a35-c9c1e569c97a",
       "name": "excract current date time "
+    },
+    {
+      "parameters": {
+        "url": "=https://www.maariv.co.il/rss/rssfeedsmivzakichadashot",
+        "options": {
+          "customFields": ""
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        384
+      ],
+      "id": "8e723441-3bab-4426-8765-b2a640cf9af7",
+      "name": "RSS MARIV"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.israelhayom.co.il/rss",
+        "options": {
+          "customFields": ""
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        576
+      ],
+      "id": "a3b35cce-ae66-4268-b87f-6bd1cf303569",
+      "name": "RSS ישראל היום "
+    },
+    {
+      "parameters": {
+        "chatId": "-1004298156034",
+        "text": "={{ $('הרכבת הודעה עצמה ').item.json.msg }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": []
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4032,
+        -336
+      ],
+      "id": "9709c9ab-daa4-425e-bd3f-97b28023722d",
+      "name": "שלח לטסט",
+      "webhookId": "f56aef02-68cc-4c23-a0f6-ebb3ffe071b0",
+      "credentials": {
+        "telegramApi": {
+          "id": "2gA8A8ly6n1u2GNv",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-1003581448219",
+        "text": "={{ $('הרכבת הודעה עצמה ').item.json.msg }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": []
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4224,
+        -336
+      ],
+      "id": "be59e877-fb8e-43d8-9522-5fef00f67dcd",
+      "name": "שלח לערוץ עצמו",
+      "webhookId": "f56aef02-68cc-4c23-a0f6-ebb3ffe071b0",
+      "credentials": {
+        "telegramApi": {
+          "id": "2gA8A8ly6n1u2GNv",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -494,6 +564,16 @@
           },
           {
             "node": "RSS WALLA NEWS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS MARIV",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS ישראל היום ",
             "type": "main",
             "index": 0
           }
@@ -700,17 +780,6 @@
         ]
       ]
     },
-    "שלח דיווח": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "make repond into text in JS1": {
       "main": [
         [
@@ -726,7 +795,7 @@
       "main": [
         [
           {
-            "node": "שלח דיווח",
+            "node": "שלח לטסט",
             "type": "main",
             "index": 0
           }
@@ -765,6 +834,50 @@
           }
         ]
       ]
+    },
+    "RSS MARIV": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "RSS ישראל היום ": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "שלח לטסט": {
+      "main": [
+        [
+          {
+            "node": "שלח לערוץ עצמו",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "שלח לערוץ עצמו": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -773,7 +886,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "7d5b91b9-4858-4f79-a52e-04f66f3b6310",
+  "versionId": "4dd4ee60-64a9-4354-85b9-70a91c077f5d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c2271feb5677333f89eb5c34660f2d35fa71ac9d582a710d205cc245e0bbef4a"
